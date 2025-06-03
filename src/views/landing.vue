@@ -75,4 +75,57 @@ background-color: #4b4a4aa8;
 }
 
 
+
+
+
+
+@media (max-width: 900px) {
+  .flex {
+    flex-direction: column;
+    gap: 30px;
+    width: 90%;
+    margin-top: 50px;
+  }
+  .texts {
+    width: 90%;
+    font-size: 20px;
+  }
+  .width {
+    width: 50%;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing {
+    background-size: cover;
+    min-height: 100vh;
+  }
+  .overlay {
+    min-height: 100vh;
+    padding-bottom: 30px;
+  }
+  h2 {
+    font-size: 1.5rem;
+    padding-top: 20px;
+  }
+  .flex {
+    width: 100%;
+    margin-top: 30px;
+    gap: 20px;
+  }
+  .image img {
+    width: 120px;
+    height: 120px;
+  }
+  .texts {
+    width: 100%;
+    font-size: 16px;
+    padding: 0 10px;
+  }
+  .width {
+    width: 90%;
+  }
+}
+
+
 </style>
