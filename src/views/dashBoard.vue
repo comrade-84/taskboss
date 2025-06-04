@@ -103,6 +103,10 @@
           </div>
         </div>
 
+        <div>
+          <canvas id="myChart"></canvas>
+        </div>
+
         <!-- Add Task Form -->
         <div class="card shadow-sm p-4 mb-5">
           <h2 class="h5 fw-bold mb-3">Add New Task</h2>
@@ -162,43 +166,33 @@
         </div>
       </div>
 
-
-<!-- Show only today's tasks when currentView is 'today' -->
-<div v-if="currentView === 'today'">
-  <div class="card shadow-sm p-4 mb-5">
-    <h2 class="h5 fw-bold mb-3">Today's Tasks</h2>
-    <p
-      v-if="!todaysTasks.length"
-      class="text-muted"
-    >
-      No tasks due today.
-    </p>
-    <ul v-else class="list-group">
-      <li
-        v-for="task in todaysTasks"
-        :key="task.id"
-        class="list-group-item"
-      >
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <p class="mb-1 fw-bold">{{ task.title }}</p>
-            <p class="mb-1 text-muted">{{ task.description || 'No description' }}</p>
-            <small class="text-muted">Added: {{ task.date }}</small>
-            <small class="text-muted d-block"
-              >Due: {{ task.dueDate || 'Not specified' }}</small
-            >
-          </div>
-          <div class="d-flex gap-2">
-            <button @click="completeTask(task.id)" class="btn btn-sm btn-success">
-              Complete
-            </button>
-            <button @click="deleteTask(task.id)" class="btn btn-sm btn-danger">Delete</button>
-          </div>
+      <!-- Show only today's tasks when currentView is 'today' -->
+      <div v-if="currentView === 'today'">
+        <div class="card shadow-sm p-4 mb-5">
+          <h2 class="h5 fw-bold mb-3">Today's Tasks</h2>
+          <p v-if="!todaysTasks.length" class="text-muted">No tasks due today.</p>
+          <ul v-else class="list-group">
+            <li v-for="task in todaysTasks" :key="task.id" class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <p class="mb-1 fw-bold">{{ task.title }}</p>
+                  <p class="mb-1 text-muted">{{ task.description || 'No description' }}</p>
+                  <small class="text-muted">Added: {{ task.date }}</small>
+                  <small class="text-muted d-block"
+                    >Due: {{ task.dueDate || 'Not specified' }}</small
+                  >
+                </div>
+                <div class="d-flex gap-2">
+                  <button @click="completeTask(task.id)" class="btn btn-sm btn-success">
+                    Complete
+                  </button>
+                  <button @click="deleteTask(task.id)" class="btn btn-sm btn-danger">Delete</button>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
-      </li>
-    </ul>
-  </div>
-</div>
+      </div>
 
       <!-- Task History View -->
       <div v-if="currentView === 'history' || currentView === 'dashboard'">
@@ -236,6 +230,7 @@
 </template>
 
 <script>
+import Chart from 'chart.js/auto';
 export default {
   data() {
     return {
@@ -266,10 +261,10 @@ export default {
       return this.tasks.filter((task) => task.owner === this.loggedInUser.name)
     },
     todaysTasks() {
-    if (!this.loggedInUser) return [];
-    const today = new Date().toISOString().split('T')[0];
-    return this.userTasks.filter(task => task.dueDate === today);
-  },
+      if (!this.loggedInUser) return []
+      const today = new Date().toISOString().split('T')[0]
+      return this.userTasks.filter((task) => task.dueDate === today)
+    },
     pendingTasks() {
       return this.userTasks.filter((task) => task.status === 'pending').length
     },
@@ -325,6 +320,34 @@ export default {
       this.$router.push({ name: 'login' }) // Redirect to login page
     },
   },
+  mounted() {
+  const ctx = document.getElementById('myChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['completed', 'today', 'pending',],
+        datasets: [{
+          label: 'Task stats',
+          data: [this.completedTasks , this.todaysTasks.length, this.pendingTasks],
+           backgroundColor: [
+            'rgba(40, 167, 69, 0.6)',   // green for completed
+            'rgba(0, 123, 255, 0.6)',   // blue for today
+            'rgba(220, 53, 69, 0.6)'    // red for pending
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+}
 }
 </script>
 
